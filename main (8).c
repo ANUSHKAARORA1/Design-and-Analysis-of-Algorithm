@@ -1,83 +1,1 @@
-/******************************************************************************
-Given an unsorted array of integers, design an algorithm and implement it using a
-program to sort an array of elements by dividing the array into two subarrays and
-combining these subarrays after sorting each one of them. Your program should
-also find number of comparisons and inversions during sorting the array.
-Input Format:
-The first line contains number of
-test cases, T. For each test case,
-there will be two input lines. First
-line contains n (the size of array).
-Second line contains space-separated integers describing array.
-*******************************************************************************/
-#include <stdio.h>
-int merge(int arr[], int temp[], int left, int mid, int right) 
-{
-    int i = left, j = mid, k = left;
-    int inversions = 0;
-    while (i < mid && j <= right) 
-    {
-        if (arr[i] <= arr[j]) 
-        {
-            temp[k++] = arr[i++];
-        } else
-        {
-            inversions += mid - i;
-            temp[k++] = arr[j++];
-        }
-    }
-
-    while (i < mid) {
-        temp[k++] = arr[i++];
-    }
-
-    while (j <= right) {
-        temp[k++] = arr[j++];
-    }
-
-    for (i = left; i <= right; i++) {
-        arr[i] = temp[i];
-    }
-
-    return inversions;
-}
-
-int mergesort(int arr[], int temp[], int left, int right) 
-{
-    int inversions = 0;
-    if (left < right) 
-    {
-        int mid = (left + right) / 2;
-        inversions += mergesort(arr, temp, left, mid);
-        inversions += mergesort(arr, temp, mid + 1, right);
-        inversions += merge(arr, temp, left, mid + 1, right);
-    }
-
-    return inversions;
-}
-
-int main() {
-    int T;
-    scanf("%d", &T);
-
-    while (T--) {
-        int n;
-        scanf("%d", &n);
-
-        int arr[n];
-        for (int i = 0; i < n; i++) {
-            scanf("%d", &arr[i]);
-        }
-        int temp[n];
-        int inversions = mergesort(arr, temp, 0, n - 1);
-        printf("sorted array:");
-        for (int i = 0; i < n; i++) {
-            printf(" %d", arr[i]);
-        }
-        printf("\n");
-        printf("comparisons: %d\n", n * (n - 1) / 2); 
-        printf("inversions: %d\n", inversions);
-    }
-
-    return 0;
-}
+/*Implement the previous problem using Kruskal's algorithm.*/#include <stdio.h>#include <stdlib.h>struct Edge {    int source, destination, weight;};struct Subset {    int parent;    int rank;};int find(struct Subset subsets[], int i) {    if (subsets[i].parent != i)        subsets[i].parent = find(subsets, subsets[i].parent);    return subsets[i].parent;}void unionSet(struct Subset subsets[], int x, int y) {    int xroot = find(subsets, x);    int yroot = find(subsets, y);    if (subsets[xroot].rank < subsets[yroot].rank)        subsets[xroot].parent = yroot;    else if (subsets[xroot].rank > subsets[yroot].rank)        subsets[yroot].parent = xroot;    else {        subsets[yroot].parent = xroot;        subsets[xroot].rank++;    }}int compare(const void* a, const void* b) {    struct Edge* edge1 = (struct Edge*)a;    struct Edge* edge2 = (struct Edge*)b;    return edge1->weight - edge2->weight;}void kruskalMST(struct Edge* edges, int V, int E) {    struct Edge result[V];    int e = 0;    int i = 0;    qsort(edges, E, sizeof(edges[0]), compare);    struct Subset* subsets = (struct Subset*)malloc(V * sizeof(struct Subset));    for (int v = 0; v < V; v++) {        subsets[v].parent = v;        subsets[v].rank = 0;    }    while (e < V - 1 && i < E) {        struct Edge nextEdge = edges[i++];        int x = find(subsets, nextEdge.source);        int y = find(subsets, nextEdge.destination);        if (x != y) {            result[e++] = nextEdge;            unionSet(subsets, x, y);        }    }    int minCost = 0;    for (i = 0; i < e; ++i)        minCost += result[i].weight;    printf("Minimum cost required to connect cities: %d\n", minCost);    free(subsets);}int main() {    int V, E;    printf("Enter the number of cities and roads: ");    scanf("%d %d", &V, &E);    struct Edge* edges = (struct Edge*)malloc(E * sizeof(struct Edge));    printf("Enter the source, destination, and cost of each road:\n");    for (int i = 0; i < E; ++i)        scanf("%d %d %d", &edges[i].source, &edges[i].destination, &edges[i].weight);    kruskalMST(edges, V, E);    free(edges);    return 0;}
