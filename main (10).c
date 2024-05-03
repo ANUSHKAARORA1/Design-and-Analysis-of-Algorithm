@@ -1,76 +1,55 @@
-/******************************************************************************
-Given an unsorted array of integers, design an algorithm and implement it using a program to
-find Kth smallest or largest element in the array. (Worst case Time Complexity = O(n))
-Input Format:
-The first line contains number of test cases, T.
-For each test case, there will be three input lines.
-First line contains n (the size of array).
-Second line contains space-separated integers describing array.
-Third line contains K.
-Output Format:
-The output will have T number of lines.
-For each test case, output will be the Kth smallest or largest array element.
-If no Kth element is present, output should be “not present”.
-*******************************************************************************/
+/*Given a graph, Design an algorithm and implement it using a program to
+implement Floyd- Warshall all pair shortest path algorithm.*/
+
 #include <stdio.h>
-#include <stdlib.h>
-int partition(int arr[], int low, int high) {
-    int pivot = arr[high];
-    int i = low - 1;
-    for (int j = low; j < high; j++) {
-        if (arr[j] <= pivot) {
-            i++;
-            int temp = arr[i];
-            arr[i] = arr[j];
-            arr[j] = temp;
+#include <limits.h>
+
+#define INF INT_MAX
+#define MAX_VERTICES 100
+
+void floydWarshall(int graph[MAX_VERTICES][MAX_VERTICES], int V) {
+    int dist[V][V];
+
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            dist[i][j] = graph[i][j];
         }
     }
-    int temp = arr[i + 1];
-    arr[i + 1] = arr[high];
-    arr[high] = temp;
-    return i + 1;
-}
-int kthSmallest(int arr[], int low, int high, int k) {
-    if (k > 0 && k <= high - low + 1) {
-        int pivotIndex = partition(arr, low, high);
 
-        if (pivotIndex - low == k - 1) {
-            return arr[pivotIndex];
+    for (int k = 0; k < V; k++) {
+        for (int i = 0; i < V; i++) {
+            for (int j = 0; j < V; j++) {
+                if (dist[i][k] != INF && dist[k][j] != INF && dist[i][k] + dist[k][j] < dist[i][j]) {
+                    dist[i][j] = dist[i][k] + dist[k][j];
+                }
+            }
         }
-
-        if (pivotIndex - low > k - 1) {
-            return kthSmallest(arr, low, pivotIndex - 1, k);
-        }
-
-        return kthSmallest(arr, pivotIndex + 1, high, k - pivotIndex + low - 1);
     }
-
-    return -1; 
+    printf("Shortest distance matrix:\n");
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            if (dist[i][j] == INF)
+                printf("INF\t");
+            else
+                printf("%d\t", dist[i][j]);
+        }
+        printf("\n");
+    }
 }
 int main() {
-    int T;
-    scanf("%d", &T);
+    int V;
+    printf("Enter the number of vertices: ");
+    scanf("%d", &V);
 
-    while (T--) {
-        int n;
-        scanf("%d", &n);
-
-        int arr[n];
-        for (int i = 0; i < n; i++) {
-            scanf("%d", &arr[i]);
-        }
-
-        int k;
-        scanf("%d", &k);
-
-        int result = kthSmallest(arr, 0, n - 1, k);
-
-        if (result != -1) {
-            printf("%d\n", result);
-        } else {
-            printf("not present\n");
+    int graph[MAX_VERTICES][MAX_VERTICES];
+    printf("Enter the adjacency matrix representation of the graph (use INF for no edge):\n");
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            scanf("%d", &graph[i][j]);
         }
     }
+
+    floydWarshall(graph, V);
+
     return 0;
 }
-
