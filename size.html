@@ -1,0 +1,32 @@
+<!-- units are : 1) absolute(fixed) 2) relative (dependent on other) -->
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+.box{
+    border: 2px solid red;
+    /* width becoe 25 % of the todatla body width avalable  */
+    width: 25%; 
+}
+.parent{
+    border: 2px solid salmon;
+    background-color: aquamarine;
+}
+.child{
+    border: 1px solid green;
+    background-color: blue;
+    /* background color oand border of parent is hidden by child div */
+    width:50%;
+}
+    </style>
+ </head>
+ <body>
+    <div class="box">
+        welcome to my webpage
+    </div>
+<div class="parent"><div class="child">CHILD</div></div>
+ </body>
+ </html>
